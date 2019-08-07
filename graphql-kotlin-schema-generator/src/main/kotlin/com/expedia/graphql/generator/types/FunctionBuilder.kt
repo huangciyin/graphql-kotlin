@@ -32,17 +32,15 @@ internal class FunctionBuilder(generator: SchemaGenerator) : TypeBuilder(generat
 
     internal fun function(fn: KFunction<*>, parentName: String, target: Any? = null, abstract: Boolean = false): GraphQLFieldDefinition {
         val builder = GraphQLFieldDefinition.newFieldDefinition()
-        val functionName = fn.getFunctionName()
-        // builder.name(functionName)
 
-        if(target!=null){
-            val prefix = target::class.getGraphQLDataFetcherPrefix()?:""
-            builder.name(prefix+functionName)
-        }else{
-            builder.name(functionName)
+        var functionName = fn.getFunctionName()
+        if (target != null) {
+            val prefix = target::class.getGraphQLDataFetcherPrefix()
+            if (prefix != null) {
+                functionName = prefix + functionName
+            }
         }
-
-
+        builder.name(functionName)
         builder.description(fn.getGraphQLDescription())
 
         fn.getDeprecationReason()?.let {
